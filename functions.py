@@ -15,7 +15,6 @@ class activation_function():
         pass
     def __call__(self, z):
         pass
-        #return self.activ(z)
 
 class sigmoid(activation_function):
     def activ(self, z):

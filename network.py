@@ -11,6 +11,7 @@ class Network():
         '''
         rng = np.random.default_rng(seed)
 
+        self.rng = rng
         self.lossfun = loss_function
         self.afun = activation_function
         self.weights = [rng.standard_normal((x,y)) for x,y in zip(sizes[1:],sizes[:-1])]
@@ -73,7 +74,7 @@ class Network():
         return wgrad, bgrad
 
     def evaluate_categorical(self, data):
-        results = [(np.argmax(self.forward(x)), y) for (x,y) in data]
+        results = [(np.argmax(self.forward(x)), np.argmax(y)) for (x,y) in data]
         return np.sum([x == y for (x,y) in results])/len(data)
       
     def __call__(self, a):
