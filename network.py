@@ -13,7 +13,7 @@ class Network():
 
         self.lossfun = loss_function
         self.afun = activation_function
-        self.weights = [rng.standard_normal((x,y)) for x,y in zip(sizes[:-1],sizes[1:])]
+        self.weights = [rng.standard_normal((x,y)) for x,y in zip(sizes[1:],sizes[:-1])]
         self.biases = [rng.standard_normal(x) for x in sizes[1:]]
 
     def forward(self, a):
@@ -41,7 +41,7 @@ class Network():
             self.weights = [w - lr * wgrad / len(data) for w, wgrad in zip(self.weights, wgradcum)]
             self.biases = [b - lr * bgrad / len(data) for b, bgrad in zip(self.biases, bgradcum)]
 
-            print(f"Epoch {i} finished. Current loss is: {self.evaluate_categorical(data)}")
+            print(f"Epoch {i} finished. Current accuracy on train data is: {self.evaluate_categorical(data)}")
 
     def backprop(self, x, y):
         '''
