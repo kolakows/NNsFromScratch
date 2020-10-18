@@ -25,5 +25,7 @@ class sigmoid(activation_function):
         return self.activ(z)
 
 class MSE(loss_function):
+    def loss(self, output_activation, y):
+        return np.sum((output_activation - y) * (output_activation - y))/len(y)
     def deriv(self, output_activation, y):
         return output_activation - y

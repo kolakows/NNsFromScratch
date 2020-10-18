@@ -1,4 +1,5 @@
 import numpy as np
+import wandb
 
 class Network():
     def __init__(self, sizes, activation_function, loss_function, seed):
@@ -14,6 +15,7 @@ class Network():
         self.rng = rng
         self.lossfun = loss_function
         self.afun = activation_function
+        # change weight initialization to better one
         self.weights = [rng.standard_normal((x,y)) for x,y in zip(sizes[1:],sizes[:-1])]
         self.biases = [rng.standard_normal(x) for x in sizes[1:]]
 
@@ -33,16 +35,20 @@ class Network():
         for i in range(epochs):
             # calculate gradient part
             wgradcum, bgradcum = self._empty_grad()
+            losscum = 0
             for x,y in data:
-                wgrad, bgrad = self.backprop(x,y)
+                wgrad, bgrad, loss = self.backprop(x,y)
                 wgradcum += wgrad # divide by len(data) now? (overflows?)
                 bgradcum += bgrad
+                losscum += loss
 
             # descent part
             self.weights = [w - lr * wgrad / len(data) for w, wgrad in zip(self.weights, wgradcum)]
             self.biases = [b - lr * bgrad / len(data) for b, bgrad in zip(self.biases, bgradcum)]
-
-            print(f"Epoch {i} finished. Current accuracy on train data is: {self.evaluate_categorical(data)}")
+            train_acc = self.evaluate_categorical(data)
+            print(f"Epoch {i} finished. Current accuracy on train data is: {train_acc}")
+            print(f"Cumulated loss for episode is {losscum : .3f}")
+            wandb.log({"Train Accuracy": train_acc, "Train Loss": losscum})
 
     def backprop(self, x, y):
         '''
@@ -71,7 +77,9 @@ class Network():
             delta = np.dot(self.weights[-i+1].transpose(), delta) * self.afun.deriv(zs[-i])
             bgrad[-i] = delta
             wgrad[-i] = activations[-i-1] * delta.reshape((-1,1))
-        return wgrad, bgrad
+
+        loss = self.lossfun.loss(activations[-1], y)
+        return wgrad, bgrad, loss
 
     def evaluate_categorical(self, data):
         results = [(np.argmax(self.forward(x)), np.argmax(y)) for (x,y) in data]

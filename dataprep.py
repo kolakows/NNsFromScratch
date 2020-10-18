@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
+from sklearn import preprocessing
 
 
 def train_test_from_df_categorical(data, preditc_label, train_size,  seed):

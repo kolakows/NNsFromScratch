@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
+import wandb
 
 
 
@@ -27,6 +28,11 @@ class Network_torch(nn.Module):
         return x
     
     def GD(self, data, lr, epochs):
+        wandb.init(project="torch_network")
+        config = wandb.config
+        config.epochs = epochs
+        config.lr = lr
+        wandb.watch(self, log_freq=5)
         optimizer = optim.SGD(self.parameters(), lr)
         for i in range(epochs):
             optimizer.zero_grad()
@@ -47,8 +53,10 @@ class Network_torch(nn.Module):
             mean_loss = cum_loss/len(data)
             mean_loss.backward()
             optimizer.step()
-            print(f"Epoch {i} finished. Current accuracy on train data is: {self.evaluate_categorical(data)}")
+            acc = self.evaluate_categorical(data)
+            print(f"Epoch {i} finished. Current accuracy on train data is: {acc}")
             print(f"Cumulated loss for episode is {cum_loss : .3f}")
+            wandb.log({"Train Accuracy": acc, "Train Loss": cum_loss})
             #print(f"Mean loss for episode is {mean_loss : .3f}")
 
     def evaluate_categorical(self, data):
