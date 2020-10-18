@@ -1,7 +1,9 @@
 import numpy as np
+from functions import *
+import math
 
 class Network():
-    def __init__(self, sizes, activation_function, loss_function, seed):
+    def __init__(self, task_type, sizes, activation_function, loss_function, seed):
         '''
         Initializes network with random weights and biases, according to passed sizes of layers.
         During inference uses passed activation function. 
@@ -14,15 +16,21 @@ class Network():
         self.rng = rng
         self.lossfun = loss_function
         self.afun = activation_function
+        self.afun_output = activation_function if task_type == 'cls' else linear() #change to softmax for classification in the future
+        self.layer_count = len(sizes)
         self.weights = [rng.standard_normal((x,y)) for x,y in zip(sizes[1:],sizes[:-1])]
         self.biases = [rng.standard_normal(x) for x in sizes[1:]]
+        self.task = task_type
 
     def forward(self, a):
         '''
         Uses 'a' as input of the network, return output
         '''
-        for w, b in zip(self.weights, self.biases):
-          a = self.afun(np.dot(w, a) + b)
+        for w, b, layer_no in zip(self.weights, self.biases, range(1, self.layer_count)):
+            if layer_no < self.layer_count - 1 :
+                a = self.afun(np.dot(w, a) + b)
+            else:
+                a = self.afun_output(np.dot(w, a) + b) 
         return a
 
     # GD will take long time to compute for large datasets, compared to SGD
@@ -42,7 +50,7 @@ class Network():
             self.weights = [w - lr * wgrad / len(data) for w, wgrad in zip(self.weights, wgradcum)]
             self.biases = [b - lr * bgrad / len(data) for b, bgrad in zip(self.biases, bgradcum)]
 
-            print(f"Epoch {i} finished. Current accuracy on train data is: {self.evaluate_categorical(data)}")
+            print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {self.evaluate(data)}")
 
     def backprop(self, x, y):
         '''
@@ -55,15 +63,19 @@ class Network():
         activations = [x] # list to store activations, layer by layer
         zs = [] # list to store weighted inputs, layer by layer
 
+            
         # feed forward
-        for w, b in zip(self.weights, self.biases):
+        for w, b, layer_no in zip(self.weights, self.biases, range(1, self.layer_count)):
             z = np.dot(w, activation) + b
             zs.append(z)
-            activation = self.afun(z)
+            if layer_no < self.layer_count - 1 :
+                activation = self.afun(z)
+            else:
+                activation = self.afun_output(z)
             activations.append(activation)
         
         # delta is partial derivative of weighted input z, starting from last layer
-        delta = self.lossfun.deriv(activations[-1], y) * self.afun.deriv(zs[-1])
+        delta = self.lossfun.deriv(activations[-1], y) * self.afun_output.deriv(zs[-1])
         bgrad[-1] = delta
         wgrad[-1] = activations[-2] * delta.reshape((-1,1))
 
@@ -73,9 +85,15 @@ class Network():
             wgrad[-i] = activations[-i-1] * delta.reshape((-1,1))
         return wgrad, bgrad
 
-    def evaluate_categorical(self, data):
-        results = [(np.argmax(self.forward(x)), np.argmax(y)) for (x,y) in data]
-        return np.sum([x == y for (x,y) in results])/len(data)
+    def evaluate(self, data):
+        if self.task == 'cls':
+            #accuracy
+            results = [(np.argmax(self.forward(x)), np.argmax(y)) for (x,y) in data]
+            return np.sum([x == y for (x,y) in results])/len(data)
+        else:
+            #root mean squared error
+            results = [(self.forward(x)[0], y) for (x,y) in data]
+            return math.sqrt(np.sum((x - y)**2 for (x,y) in results) / len(results))
       
     def __call__(self, a):
         return self.forward(a)
