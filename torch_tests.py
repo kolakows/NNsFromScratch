@@ -1,5 +1,5 @@
 from dataprep import *
-from network_torch import *
+from torch_network import *
 import pandas as pd
 import numpy as np
 import torch.nn as nn
