@@ -20,7 +20,7 @@ class Network():
         self.afun = activation_function
         self.afun_output = activation_function if task_type == 'cls' else linear() #change to softmax for classification in the future
         self.layer_count = len(network_size)
-        self.weights = [rng.standard_normal((x,y)) for x,y in zip(network_size[1:],network_size[:-1])]
+        self.weights = [rng.standard_normal((x,y))/np.sqrt(y) for x,y in zip(network_size[1:],network_size[:-1])]
         self.biases = [rng.standard_normal(x) for x in network_size[1:]]
         self.task = task_type
 
