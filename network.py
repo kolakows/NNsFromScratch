@@ -3,7 +3,7 @@ from functions import *
 import math
 
 class Network():
-    def __init__(self, task_type, sizes, activation_function, loss_function, seed):
+    def __init__(self, task_type, sizes, activation_function, loss_function, seed, set_biases = True):
         '''
         Initializes network with random weights and biases, according to passed sizes of layers.
         During inference uses passed activation function. 
@@ -21,7 +21,11 @@ class Network():
         self.afun_output = activation_function if task_type == 'cls' else linear() #change to softmax for classification in the future
         self.layer_count = len(network_size)
         self.weights = [rng.standard_normal((x,y))/np.sqrt(y) for x,y in zip(network_size[1:],network_size[:-1])]
-        self.biases = [rng.standard_normal(x) for x in network_size[1:]]
+        self.set_biases = set_biases
+        if set_biases:
+            self.biases = [rng.standard_normal(x) for x in network_size[1:]]
+        else:
+            self.biases = [np.zeros(x) for x in network_size[1:]]
         self.task = task_type
 
     def forward(self, a):
@@ -50,7 +54,8 @@ class Network():
 
             # descent part
             self.weights = [w - lr * wgrad / len(data) for w, wgrad in zip(self.weights, wgradcum)]
-            self.biases = [b - lr * bgrad / len(data) for b, bgrad in zip(self.biases, bgradcum)]
+            if self.set_biases:
+                self.biases = [b - lr * bgrad / len(data) for b, bgrad in zip(self.biases, bgradcum)]
 
             print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {self.evaluate(data)}")
 
