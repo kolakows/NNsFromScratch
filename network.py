@@ -12,14 +12,16 @@ class Network():
         one hidden layer sized 10, and output of the network is a vector of length 5.
         '''
         rng = np.random.default_rng(seed)
+        network_size = sizes
+        network_size.append(network_size[-1])
 
         self.rng = rng
         self.lossfun = loss_function
         self.afun = activation_function
         self.afun_output = activation_function if task_type == 'cls' else linear() #change to softmax for classification in the future
-        self.layer_count = len(sizes)
-        self.weights = [rng.standard_normal((x,y)) for x,y in zip(sizes[1:],sizes[:-1])]
-        self.biases = [rng.standard_normal(x) for x in sizes[1:]]
+        self.layer_count = len(network_size)
+        self.weights = [rng.standard_normal((x,y)) for x,y in zip(network_size[1:],network_size[:-1])]
+        self.biases = [rng.standard_normal(x) for x in network_size[1:]]
         self.task = task_type
 
     def forward(self, a):

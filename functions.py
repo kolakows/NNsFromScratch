@@ -1,4 +1,5 @@
 import numpy as np
+import math 
 
 class loss_function():
     '''
@@ -44,10 +45,11 @@ class param_relu(activation_function):
 
 class softmax(activation_function):
     def activ(self, z):
-        e_z = np.exp(z)
+        e_z = np.exp(z - np.max(z))
         return e_z / e_z.sum()
     def deriv(self, z):
-        raise NotImplementedError
+        act = self.activ(z)
+        return act * (1 - act)
     def __call__(self, z):
         return self.activ(z)
 
@@ -67,10 +69,6 @@ class SE(loss_function):
     def deriv(self, output_activation, y):
         return output_activation - y
 
-class multiclass_cross_entropy(loss_function):
+class cross_entropy(loss_function):
     def deriv(self, output_activation, y):
-        pass
-
-class sparse_multiclass_cross_entropy(loss_function):
-    def deriv(self, output_activation, y):
-        pass
+        return - y / math.log(output_activation + 1e-8) # to avoid log(0)

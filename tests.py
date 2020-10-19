@@ -4,10 +4,10 @@ from dataprep import *
 import pandas as pd
 import numpy as np
 
-# for classification select the size of the output layer corresponding to the number of labels?
-# for regression select the size of the output layer as 1?
+# for classification select the size of the output layer corresponding to the number of labels
+# for regression select the size of the output layer as 1
 
-# random number generator seed (null for random seed???)
+# random number generator seed (None for random seed)
 seed = 123
 
 # set 'reg' for regression and 'cls' for classification
