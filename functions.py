@@ -1,5 +1,5 @@
 import numpy as np
-import math 
+import math
 
 class loss_function():
     '''
@@ -62,13 +62,29 @@ class linear(activation_function):
         return self.activ(z)
 
 class MSE(loss_function):
+    def loss(self, output_activation, y):
+        return np.sum((output_activation - y)*(output_activation - y)) / len(y)
     def deriv(self, output_activation, y):
         return (output_activation - y) / len(y)
 
 class SE(loss_function):
+    def loss(self, output_activation, y):
+        return np.sum((output_activation - y)*(output_activation - y))
     def deriv(self, output_activation, y):
         return output_activation - y
 
 class cross_entropy(loss_function):
     def deriv(self, output_activation, y):
         return - y / math.log(output_activation + 1e-8) # to avoid log(0)
+
+
+function_dict = {
+    'sigmoid' : sigmoid(),
+    'relu' : relu(),
+    'param_relu' : param_relu(0.01), # LeakyReLU
+    'softmax' : softmax(),
+    'linear' : linear(),
+    'MSE' : MSE(),
+    'SE' : SE(),
+    'cross_entropy' : cross_entropy()
+}
