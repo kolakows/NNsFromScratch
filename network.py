@@ -3,7 +3,7 @@ from functions import *
 import math
 
 class Network():
-    def __init__(self, task_type, sizes, activation_function, loss_function, seed, set_biases = True):
+    def __init__(self, task_type, network_size, activation_function, loss_function, seed, set_biases = True):
         '''
         Initializes network with random weights and biases, according to passed sizes of layers.
         During inference uses passed activation function. 
@@ -12,8 +12,7 @@ class Network():
         one hidden layer sized 10, and output of the network is a vector of length 5.
         '''
         rng = np.random.default_rng(seed)
-        network_size = sizes
-        network_size.append(network_size[-1])
+        #network_size.append(network_size[-1])
 
         self.rng = rng
         self.lossfun = loss_function
