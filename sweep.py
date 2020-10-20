@@ -50,7 +50,7 @@ def train():
 
     config_defaults = dict(
         data = 'classification/data.three_gauss.test.100.csv',
-        layers = None,
+        layers = '[2,3]',
         lr = 1,
         epochs = 30,
         seed = 123,

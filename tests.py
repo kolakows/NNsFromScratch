@@ -18,11 +18,12 @@ task_type = 'reg'
 # classification: input - space dim, output - number of classes
 # regression: input - space dim, output - 1
 #net_arch = [2, 10, 3]
-net_arch = [1, 3, 3, 1]
+net_arch = [2, 3]
 
 # path to train data
 #train_data_path = '/home/monika/Pulpit/SN/SN_projekt1/classification/data.three_gauss.test.100.csv'
-train_data_path = '/home/monika/Pulpit/SN/SN_projekt1/regression/data.activation.test.100.csv'
+#train_data_path = '/home/monika/Pulpit/SN/SN_projekt1/regression/data.activation.test.100.csv'
+train_data_path = r'C:\MiniProjects\sem2\NeuralNets\classification\data.three_gauss.test.100.csv'
 
 #path to test data (to be used in the future)
 #currently test data is split

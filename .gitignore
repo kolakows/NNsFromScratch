@@ -2,3 +2,4 @@ classification
 regression
 .vscode
 __pycache__
+wandb
