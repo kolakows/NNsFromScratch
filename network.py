@@ -66,8 +66,8 @@ class Network():
             wgradcum, bgradcum = self._empty_grad()
             for x,y in train_data:
                 wgrad, bgrad = self.backprop(x,y)
-                wgradcum += wgrad # divide by len(data) now? (overflows?)
-                bgradcum += bgrad
+                wgradcum = [old_w + w for old_w, w in zip(wgradcum, wgrad)] # divide by len(data) now? (overflows?)
+                bgradcum = [old_b + b for old_b, b in zip(bgradcum, bgrad)]
 
             # descent part
             self.weights = [w - lr * wgrad / len(train_data) for w, wgrad in zip(self.weights, wgradcum)]
@@ -135,7 +135,7 @@ class Network():
         return self.forward(a)
 
     def _empty_grad(self):
-        wgrad = np.array([np.zeros(w.shape) for w in self.weights])
-        bgrad = np.array([np.zeros(b.shape) for b in self.biases])
+        wgrad = [np.zeros(w.shape) for w in self.weights]
+        bgrad = [np.zeros(b.shape) for b in self.biases]
         return wgrad, bgrad
 
