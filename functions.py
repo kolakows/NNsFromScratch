@@ -20,7 +20,8 @@ class sigmoid(activation_function):
     def activ(self, z):
         return 1/(1 + np.exp(-z))
     def deriv(self, z):
-        return self.activ(z) * (1 - self.activ(z))
+        act = self.activ(z)
+        return act * (1 - act)
     def __call__(self, z):
         return self.activ(z)
 
