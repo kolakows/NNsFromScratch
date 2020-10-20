@@ -97,7 +97,7 @@ class Network():
         if self.task == 'cls':
             #accuracy
             results = [(np.argmax(self.forward(x)), np.argmax(y)) for (x,y) in data]
-            return np.sum([x == y for (x,y) in results])/len(data)
+            return np.sum([x == y for (x,y) in results])/len(data), results
         else:
             #root mean squared error
             results = [(self.forward(x)[0], y) for (x,y) in data]
