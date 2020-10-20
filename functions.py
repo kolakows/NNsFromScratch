@@ -39,7 +39,6 @@ class param_relu(activation_function):
     def activ(self, z):
         return [(zi if zi >= 0 else self.alpha*zi) for zi in z]
     def deriv(self, z):
-        print(z)
         return [(1 if zi >= 0 else self.alpha) for zi in z]
     def __call__(self, z):
         return self.activ(z)
@@ -78,6 +77,11 @@ class cross_entropy(loss_function):
     def deriv(self, output_activation, y):
         return - y / math.log(output_activation + 1e-8) # to avoid log(0)
 
+class MAE(loss_function):
+    def loss(self, output_activation, y):
+        return np.abs(output_activation - y)
+    def deriv(self, output_activation, y):
+        return [(-1 if z < 0 else 1) for z in (output_activation - y)]
 
 function_dict = {
     'sigmoid' : sigmoid(),

@@ -55,8 +55,10 @@ class Network():
             self.weights = [w - lr * wgrad / len(data) for w, wgrad in zip(self.weights, wgradcum)]
             if self.set_biases:
                 self.biases = [b - lr * bgrad / len(data) for b, bgrad in zip(self.biases, bgradcum)]
+            
+            score, results = self.evaluate(data)
 
-            print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {self.evaluate(data)}")
+            print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {score}")
 
     def backprop(self, x, y):
         '''
@@ -99,7 +101,7 @@ class Network():
         else:
             #root mean squared error
             results = [(self.forward(x)[0], y) for (x,y) in data]
-            return math.sqrt(np.sum((x - y)**2 for (x,y) in results) / len(results))
+            return math.sqrt(np.sum((y_n - y_real)**2 for (y_n,y_real) in results) / len(results)), results
       
     def __call__(self, a):
         return self.forward(a)
