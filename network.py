@@ -1,6 +1,9 @@
 import numpy as np
 from functions import *
 import math
+import os
+import ast
+import wandb
 
 class Network():
     def __init__(self, task_type, sizes, activation_function, loss_function, seed, set_biases = True):
@@ -28,6 +31,20 @@ class Network():
             self.biases = [np.zeros(x) for x in network_size[1:]]
         self.task = task_type
 
+    @classmethod
+    def from_config(cls, config):
+        # extract task type from data path
+        task_type, _ = os.path.split(config.data)
+        if task_type == 'classification':
+            task_type = 'cls'
+        else:
+            task_type = 'reg'
+
+        activation_function = function_dict[config.activation_function]
+        loss_function = function_dict[config.loss_function]
+        layers = ast.literal_eval(config.layers)
+        return cls(task_type, layers, activation_function, loss_function, config.seed)
+
     def forward(self, a):
         '''
         Uses 'a' as input of the network, return output
@@ -40,24 +57,28 @@ class Network():
         return a
 
     # GD will take long time to compute for large datasets, compared to SGD
-    def GD(self, data, lr, epochs):
+    def GD(self, train_data, lr, epochs, test_data = None):
         '''
         Implements full gradient descent over all data, repeats for x epochs
         '''
         for i in range(epochs):
             # calculate gradient part
             wgradcum, bgradcum = self._empty_grad()
-            for x,y in data:
+            for x,y in train_data:
                 wgrad, bgrad = self.backprop(x,y)
                 wgradcum += wgrad # divide by len(data) now? (overflows?)
                 bgradcum += bgrad
 
             # descent part
-            self.weights = [w - lr * wgrad / len(data) for w, wgrad in zip(self.weights, wgradcum)]
+            self.weights = [w - lr * wgrad / len(train_data) for w, wgrad in zip(self.weights, wgradcum)]
             if self.set_biases:
-                self.biases = [b - lr * bgrad / len(data) for b, bgrad in zip(self.biases, bgradcum)]
+                self.biases = [b - lr * bgrad / len(train_data) for b, bgrad in zip(self.biases, bgradcum)]
 
-            print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {self.evaluate(data)}")
+            print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {self.evaluate(train_data)}")
+            # log epoch
+            wandb.log({'epoch': i, 'train loss': self.calculate_loss(train_data)})
+            if test_data:
+                wandb.log({'test loss': self.calculate_loss(test_data)})
 
     def backprop(self, x, y):
         '''
@@ -80,7 +101,7 @@ class Network():
             else:
                 activation = self.afun_output(z)
             activations.append(activation)
-        
+
         # delta is partial derivative of weighted input z, starting from last layer
         delta = self.lossfun.deriv(activations[-1], y) * self.afun_output.deriv(zs[-1])
         bgrad[-1] = delta
@@ -101,6 +122,14 @@ class Network():
             #root mean squared error
             results = [(self.forward(x)[0], y) for (x,y) in data]
             return math.sqrt(np.sum((x - y)**2 for (x,y) in results) / len(results))
+
+    def calculate_loss(self, data):
+        results = []
+        if self.task == 'cls':
+            results = [(np.argmax(self.forward(x)), np.argmax(y)) for (x,y) in data]
+        else:
+            results = [(self.forward(x)[0], y) for (x,y) in data]
+        return np.sum([self.lossfun.loss(output, y) for output, y in results])
       
     def __call__(self, a):
         return self.forward(a)
