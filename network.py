@@ -20,7 +20,7 @@ class Network():
         self.rng = rng
         self.lossfun = loss_function
         self.afun = activation_function
-        self.afun_output = activation_function if task_type == 'cls' else linear() #change to softmax for classification in the future
+        self.afun_output = softmax() if task_type == 'cls' else linear()
         self.layer_count = len(network_size)
         self.weights = [rng.standard_normal((x,y))/np.sqrt(y) for x,y in zip(network_size[1:],network_size[:-1])]
         self.set_biases = set_biases
@@ -73,7 +73,8 @@ class Network():
             if self.set_biases:
                 self.biases = [b - lr * bgrad / len(train_data) for b, bgrad in zip(self.biases, bgradcum)]
 
-            print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {self.evaluate(train_data)}")
+            score, results = self.evaluate(train_data)
+            print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {score}")
             # log epoch
             wandb.log({'epoch': i, 'train loss': self.calculate_loss(train_data)})
             if test_data:
@@ -116,11 +117,11 @@ class Network():
         if self.task == 'cls':
             #accuracy
             results = [(np.argmax(self.forward(x)), np.argmax(y)) for (x,y) in data]
-            return np.sum([x == y for (x,y) in results])/len(data)
+            return np.sum([x == y for (x,y) in results])/len(data), results
         else:
             #root mean squared error
             results = [(self.forward(x)[0], y) for (x,y) in data]
-            return math.sqrt(np.sum((x - y)**2 for (x,y) in results) / len(results))
+            return math.sqrt(np.sum((y_n - y_real)**2 for (y_n,y_real) in results) / len(results)), results
 
     def calculate_loss(self, data):
         results = []
