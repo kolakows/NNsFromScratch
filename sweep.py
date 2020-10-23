@@ -10,36 +10,11 @@ from pathlib import Path
 
 
 
-def sweep():
+def sweep(sweep_config):
 
     # load data
     # data = pd.read_csv(data_path, sep=',', header=0)
     # train, test, label_encoder = train_test_from_df_categorical(data, 'cls', 0.9, seed)
-
-    # prepare sweep config
-    sweep_config = {
-        'method': 'grid',
-        'parameters': {
-            'data': {
-                'values': ['classification/data.three_gauss.test.100.csv']
-            },
-            'layers': {
-                'values': ['[2,3]','[2,2,3]']
-            },            
-            'loss_function':{
-                'values': ['MSE', 'SE']
-            },
-            'activation_function':{
-                'values': ['sigmoid', 'relu']
-            },
-            'seed':{
-                'values': [123]
-            },
-            'lr':{
-                'values': [1,2]
-            },
-        }
-    }
 
     sweep_id = wandb.sweep(sweep_config, project='network_from_scratch')
     wandb.agent(sweep_id, function=train)
@@ -70,12 +45,24 @@ def train():
     else:
         task_type = 'reg'
 
+
     # read data
     data = pd.read_csv(data_path, sep=',', header=0)
-    train, test, label_encoder = train_test_from_df_categorical(data, task_type, 0.9, config.seed)
+ 
+    if task_type == 'cls':
+        train, test, label_encoder = train_test_from_df_categorical(data, 'cls', 0.9, config.seed)
+    elif task_type == 'reg':
+        train, test = train_test_from_df_regression(data, 'y', 0.9, config.seed)
+
 
     net = Network.from_config(config)
-    net.GD(train, config.lr, config.epochs, test)
+    net.GD(train, config.lr, config.epochs, test, True)
+
+
+    wandb.log({'Train data plot': wandb.Image(get_data_plot(train, net))}, step=config.epochs)
+    plt.close()
+    wandb.log({'Test data plot': wandb.Image(get_data_plot(test, net))}, step=config.epochs)
+    plt.close()
     #print(f'Category accuracy score: {net.evaluate_categorical(test)}')
 
 
