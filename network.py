@@ -1,5 +1,6 @@
 import numpy as np
 from functions import *
+from plotutils import *
 import math
 import os
 import ast
@@ -56,7 +57,7 @@ class Network():
         return a
 
     # GD will take long time to compute for large datasets, compared to SGD
-    def GD(self, train_data, lr, epochs, test_data = None):
+    def GD(self, train_data, lr, epochs, test_data = None, log = False):
         '''
         Implements full gradient descent over all data, repeats for x epochs
         '''
@@ -76,9 +77,15 @@ class Network():
             score, results = self.evaluate(train_data)
             print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {score}")
             # log epoch
-            wandb.log({'epoch': i, 'train loss': self.calculate_loss(train_data)})
-            if test_data:
-                wandb.log({'test loss': self.calculate_loss(test_data)})
+            if log:
+                log_data = {}
+                log_data['Train loss'] = self.calculate_loss(train_data)
+                log_data[f"{'Accuracy' if self.task == 'cls' else 'RMSE'} on train data"] = score
+                if test_data:
+                    score, results = self.evaluate(test_data)
+                    log_data['Test loss'] = self.calculate_loss(test_data)
+                    log_data[f"{'Accuracy' if self.task == 'cls' else 'RMSE'} on test data"] = score
+                wandb.log(log_data)
 
     def backprop(self, x, y):
         '''
