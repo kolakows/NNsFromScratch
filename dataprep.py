@@ -34,4 +34,4 @@ def df_to_list(df, preditc_label, encoder = None):
     if encoder:
         return  [(x,y) for x, y in zip(df.loc[:, df.columns != preditc_label].to_numpy(), encoder.transform(df[preditc_label].values.reshape(-1,1)))]
     else:
-        return [(x,y) for x, y in zip(df.loc[:, df.columns != preditc_label].to_numpy(), df[preditc_label].to_numpy())]
+        return [(x,[y]) for x, y in zip(df.loc[:, df.columns != preditc_label].to_numpy(), df[preditc_label].to_numpy())]

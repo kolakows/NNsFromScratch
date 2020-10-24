@@ -15,8 +15,8 @@ def plot_reg_results(test_data, results):
     plt.show()
 
 def get_data_plot(data, network):
+    score, results = network.evaluate(data)
     if network.task == 'cls':
-        score, results = network.evaluate(data)
 
         x_val = [x for (x,y) in data]
         y_val = [np.argmax(y) for (x,y) in data]
@@ -32,7 +32,7 @@ def get_data_plot(data, network):
         ax = sns.scatterplot(data = df, x = 'x', y = 'y', hue = 'class', size = 'data source',
                             palette = sns.color_palette()[:c_num], sizes = (50,150))
         
-        
+
         # ax = sns.scatterplot(data = df[df['data source'] == 'Actual'], x = 'x', y = 'y', hue = 'class', 
         # palette = sns.color_palette()[c_num: 2*c_num]) #, style='data source')
         return plt
@@ -41,6 +41,9 @@ def get_data_plot(data, network):
         y_val = [y for (x,y) in data]
         y_nn = [y_n for (y_n,y_real) in results]
 
-        plt.plot(x_val, y_val, '-o', label='Actual')
-        plt.plot(x_val, y_nn, 'o', label='NN output')
+        df = pd.DataFrame({'x': x_val, 'Actual': y_val, 'NN output': y_nn})
+        df = df.melt(id_vars=['x'], var_name='data source', value_name = 'y')
+        df = df.explode('x').explode('y')
+
+        ax = sns.scatterplot(data = df, x = 'x', y = 'y', hue = 'data source')
         return plt
