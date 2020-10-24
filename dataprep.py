@@ -1,24 +1,43 @@
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 
-
-def train_test_from_df_categorical(data, preditc_label, train_size,  seed):
+def train_test_from_df_categorical(data, predict_label, train_size,  seed, data_scaler = MinMaxScaler):
     '''
     Splits data into train, test sets in stratified fashion (keeps train/split ratio across classes)
     Encoder is used to encode labels as one hot bit encoding, to get original labels, use encoder.inverse_transform(encoded_labels)
     '''
-    train, test = train_test_split(data, train_size = train_size, stratify = data[preditc_label], random_state = seed)
-    encoder = label_encoder(data, preditc_label)
-    return df_to_list(train, preditc_label, encoder), df_to_list(test, preditc_label, encoder), encoder
+    train, test = train_test_split(data, train_size = train_size, stratify = data[predict_label], random_state = seed)
 
-def train_test_from_df_regression(data, predict_label, train_size, seed):
+    # encode labels to one hot bit encoding
+    encoder = label_encoder(data, predict_label)
+    
+    # scale data
+    scalers = scale_columns(train, test, data_scaler, [predict_label])
+    return df_to_list(train, predict_label, encoder), df_to_list(test, predict_label, encoder), encoder, scalers
+
+def train_test_from_df_regression(data, predict_label, train_size, seed, data_scaler = MinMaxScaler):
     '''
     Splits regression data into train, test sets.
     '''
-    #should we normalize data?
     train, test = train_test_split(data, train_size=train_size, random_state=seed)
-    return df_to_list(train, predict_label), df_to_list(test, predict_label)
+
+    # scale data
+    scalers = scale_columns(train, test, data_scaler)
+
+    return df_to_list(train, predict_label), df_to_list(test, predict_label), scalers
+
+def scale_columns(train, test, data_scaler, columns_not_scaled = []):
+    scalers = {}
+    columns_to_scale = [col for col in train.columns if col not in columns_not_scaled]
+    for col in columns_to_scale:
+        scaler = data_scaler()
+        scaler.fit(train[col].values.reshape(-1,1))
+        train[col] = scaler.transform(train[col].values.reshape(-1,1))
+        test[col] = scaler.transform(test[col].values.reshape(-1,1))
+        scalers[col] = scaler
+    return scalers
 
 def label_encoder(data, preditc_label):
     enc = OneHotEncoder(sparse = False)

@@ -3,6 +3,8 @@ from functions import *
 from dataprep import *
 import pandas as pd
 from plotutils import *
+import numpy as np
+
 
 # for classification select the size of the output layer corresponding to the number of labels
 # for regression select the size of the output layer as 1
@@ -12,7 +14,7 @@ seed = None
 
 # set 'reg' for regression and 'cls' for classification
 task_type='cls'
-#task_type = 'reg'
+# task_type = 'reg'
 
 # number of perceptrons in each layer
 # classification: input - space dim, output - number of classes
@@ -39,11 +41,11 @@ net = Network(task_type, net_arch, activation_fun, loss_fun, seed)
 data = pd.read_csv(train_data_path, sep=',', header=0)
 
 if task_type == 'cls':
-    train, test, label_encoder = train_test_from_df_categorical(data, 'cls', 0.9, seed)
+    train, test, label_encoder, feature_scalers = train_test_from_df_categorical(data, 'cls', 0.9, seed)
 elif task_type == 'reg':
-    train, test = train_test_from_df_regression(data, 'y', 0.9, seed)
+    train, test, feature_scalers = train_test_from_df_regression(data, 'y', 0.9, seed)
 
-net.GD(train, lr = 1, epochs = 200)
+net.GD(train, lr = 1, epochs = 20)
 
 test.sort(key = lambda val: val[0][0])
 score, results = net.evaluate(test)
