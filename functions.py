@@ -84,12 +84,15 @@ class MAE(loss_function):
         return [(-1 if z < 0 else 1) for z in (output_activation - y)]
 
 function_dict = {
+    # activation functions
     'sigmoid' : sigmoid(),
-    'relu' : relu(),
-    'param_relu' : param_relu(0.01), # LeakyReLU
+    'ReLU' : relu(),
+    'LeakyReLU' : param_relu(0.01), # LeakyReLU
     'softmax' : softmax(),
     'linear' : linear(),
+    # loss functions
     'MSE' : MSE(),
     'SE' : SE(),
-    'cross_entropy' : cross_entropy()
+    'cross_entropy' : cross_entropy(),
+    'MAE' : MAE()
 }

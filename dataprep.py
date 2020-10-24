@@ -10,6 +10,10 @@ def train_test_from_df_categorical(data, predict_label, train_size,  seed, data_
     '''
     train, test = train_test_split(data, train_size = train_size, stratify = data[predict_label], random_state = seed)
 
+    # turn views into dataframes
+    train = train.copy()
+    test = test.copy()
+
     # encode labels to one hot bit encoding
     encoder = label_encoder(data, predict_label)
     
@@ -23,6 +27,10 @@ def train_test_from_df_regression(data, predict_label, train_size, seed, data_sc
     '''
     train, test = train_test_split(data, train_size=train_size, random_state=seed)
 
+    # turn views into dataframes
+    train = train.copy()
+    test = test.copy()
+    
     # scale data
     scalers = scale_columns(train, test, data_scaler)
 
