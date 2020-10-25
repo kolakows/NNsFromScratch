@@ -131,11 +131,7 @@ class Network():
             return math.sqrt(np.sum((y_n[0] - y_real[0])**2 for (y_n,y_real) in results) / len(results)), results
 
     def calculate_loss(self, data):
-        results = []
-        if self.task == 'cls':
-            results = [(np.argmax(self.forward(x)), np.argmax(y)) for (x,y) in data]
-        else:
-            results = [(self.forward(x), y) for (x,y) in data]
+        results = [(self.forward(x), y) for (x,y) in data]
         return np.sum([self.lossfun.loss(output, y) for output, y in results])
       
     def __call__(self, a):
