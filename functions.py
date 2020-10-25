@@ -75,7 +75,7 @@ class SE(loss_function):
 
 class cross_entropy(loss_function):
     def deriv(self, output_activation, y):
-        return - y / math.log(output_activation + 1e-8) # to avoid log(0)
+        return - np.divide(y, output_activation) + np.divide(1 - y, 1 - output_activation)
 
 class MAE(loss_function):
     def loss(self, output_activation, y):
