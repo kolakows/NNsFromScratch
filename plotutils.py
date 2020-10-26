@@ -14,6 +14,24 @@ def plot_reg_results(test_data, results):
     plt.legend()
     plt.show()
 
+def plot_classification_results(net, test_data):
+    x = np.arange(0,1,0.01)
+    y = x
+    xx, yy = np.meshgrid(x,y)
+
+    net_outputs_grid = [net.forward([x,y]) for x,y in zip(xx.ravel(),yy.ravel())]
+    df = pd.DataFrame({'x': xx.ravel(), 'y': yy.ravel(), 'cls': np.argmax(net_outputs_grid, axis= 1)})
+    sns.scatterplot(data = df, x = 'x', y = 'y', hue = 'cls', size = 0.01, palette='deep')
+
+    true_labels = [y for x,y in test_data]
+    x_coords = [x[0] for x,y in test_data]
+    y_coords = [x[1] for x,y in test_data]
+    df = pd.DataFrame({'cls': np.argmax(true_labels, axis = 1), 'x': x_coords, 'y': y_coords})
+    ax = sns.scatterplot(data = df, x = 'x', y = 'y', hue = 'cls', size = 0.01, palette='deep')
+    ax.legend([],[], frameon=False)
+
+    plt.show()
+
 def get_data_plot(data, network):
     score, results = network.evaluate(data)
     if network.task == 'cls':
