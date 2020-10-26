@@ -57,9 +57,13 @@ class Network():
         return a
 
     # GD will take long time to compute for large datasets, compared to SGD
-    def GD(self, train_data, lr, epochs, test_data = None, log = False):
+    def GD(self, train_data, lr, epochs, test_data = None, log = False, log_accuracy = True):
         '''
         Implements full gradient descent over all data, repeats for x epochs
+
+        log = True, logs performance of training to wandb
+            if test_data is provided, then also performance on test data is logged
+            if log_accuracy = False, then only loss is reported
         '''
         for i in range(epochs):
             # calculate gradient part
@@ -74,17 +78,20 @@ class Network():
             if self.set_biases:
                 self.biases = [b - lr * bgrad / len(train_data) for b, bgrad in zip(self.biases, bgradcum)]
 
-            score, results = self.evaluate(train_data)
-            print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {score}")
+            if log_accuracy:
+                score, results = self.evaluate(train_data)
+                print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {score}")
             # log epoch
             if log:
                 log_data = {}
                 log_data['Train loss'] = self.calculate_loss(train_data)
-                log_data[f"{'Accuracy' if self.task == 'cls' else 'RMSE'} on train data"] = score
                 if test_data:
-                    score, results = self.evaluate(test_data)
                     log_data['Test loss'] = self.calculate_loss(test_data)
-                    log_data[f"{'Accuracy' if self.task == 'cls' else 'RMSE'} on test data"] = score
+                if log_accuracy:
+                    log_data[f"{'Accuracy' if self.task == 'cls' else 'RMSE'} on train data"] = score
+                    if test_data:
+                        score, results = self.evaluate(test_data)
+                        log_data[f"{'Accuracy' if self.task == 'cls' else 'RMSE'} on test data"] = score
                 wandb.log(log_data)
 
     def backprop(self, x, y):
