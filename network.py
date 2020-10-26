@@ -57,7 +57,7 @@ class Network():
         return a
 
     # GD will take long time to compute for large datasets, compared to SGD
-    def GD(self, train_data, lr, epochs, test_data = None, log = False, log_accuracy = True):
+    def GD(self, train_data, lr, epochs, test_data = None, log = False, log_accuracy = True, plot_loss = False):
         '''
         Implements full gradient descent over all data, repeats for x epochs
 
@@ -65,6 +65,8 @@ class Network():
             if test_data is provided, then also performance on test data is logged
             if log_accuracy = False, then only loss is reported
         '''
+        test_loss = []
+        train_loss = []
         for i in range(epochs):
             # calculate gradient part
             wgradcum, bgradcum = self._empty_grad()
@@ -81,6 +83,10 @@ class Network():
             if log_accuracy:
                 score, results = self.evaluate(train_data)
                 print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {score}")
+            if plot_loss:
+                train_loss.append(self.calculate_loss(train_data))
+                if test_data:
+                    test_loss.append(self.calculate_loss(test_data))
             # log epoch
             if log:
                 log_data = {}
@@ -93,6 +99,10 @@ class Network():
                         score, results = self.evaluate(test_data)
                         log_data[f"{'Accuracy' if self.task == 'cls' else 'RMSE'} on test data"] = score
                 wandb.log(log_data)
+        if plot_loss:
+            plot_loss_function(train_loss, 'Train loss')
+            if test_data:
+                plot_loss_function(test_loss, 'Test loss')
 
     def backprop(self, x, y):
         '''

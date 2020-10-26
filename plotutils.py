@@ -14,6 +14,12 @@ def plot_reg_results(test_data, results):
     plt.legend()
     plt.show()
 
+def plot_loss_function(loss, plot_title):
+    ax = sns.lineplot(y = loss, x = np.arange(len(loss)))
+    ax.set_title(plot_title)
+    plt.show()
+    plt.close()
+
 def plot_classification_results(net, test_data):
     x = np.arange(0,1,0.01)
     y = x
