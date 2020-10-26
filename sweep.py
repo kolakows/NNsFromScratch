@@ -24,13 +24,13 @@ def train():
     local_path = 'C:/MiniProjects/sem2/NeuralNets/'
 
     config_defaults = dict(
-        data = 'regression/data.activation.train.100.csv',
-        layers = '[1,4,1]',
+        data = 'classification/data.three_gauss.test.100.csv',
+        layers = '[2,4,3]',
         lr = 1,
         epochs = 30,
         seed = 123,
-        loss_function = 'MSE',
-        activation_function = 'relu',
+        loss_function = 'cross_entropy',
+        activation_function = 'sigmoid',
     )
 
     wandb.init(config=config_defaults)
@@ -56,7 +56,15 @@ def train():
 
 
     net = Network.from_config(config)
-    net.GD(train, config.lr, config.epochs, test, True)
+    net.GD(train, config.lr, config.epochs, test, True, False)
+
+    # log final accuracy
+    log_data = {}
+    score, results = net.evaluate(train)  
+    log_data[f"{'Accuracy' if net.task == 'cls' else 'RMSE'} on train data"] = score
+    score, results = net.evaluate(test)
+    log_data[f"{'Accuracy' if net.task == 'cls' else 'RMSE'} on test data"] = score
+    wandb.log(log_data, step=config.epochs)
 
 
     wandb.log({'Train data plot': wandb.Image(get_data_plot(train, net))}, step=config.epochs)
