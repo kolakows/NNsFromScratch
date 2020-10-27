@@ -57,7 +57,7 @@ class Network():
         return a
 
     # GD will take long time to compute for large datasets, compared to SGD
-    def GD(self, train_data, lr, epochs, test_data = None, log = False, log_accuracy = True, plot_loss = False):
+    def GD(self, train_data, lr, epochs, test_data = None, log = False, log_accuracy = True, plot_loss = False, batch_size = 50):
         '''
         Implements full gradient descent over all data, repeats for x epochs
 
@@ -68,17 +68,22 @@ class Network():
         test_loss = []
         train_loss = []
         for i in range(epochs):
-            # calculate gradient part
-            wgradcum, bgradcum = self._empty_grad()
-            for x,y in train_data:
-                wgrad, bgrad = self.backprop(x,y)
-                wgradcum = [old_w + w for old_w, w in zip(wgradcum, wgrad)] # divide by len(data) now? (overflows?)
-                bgradcum = [old_b + b for old_b, b in zip(bgradcum, bgrad)]
+            #train_data_all = list(train_data_ordered)
+            self.rng.shuffle(train_data)
+            batches = [train_data[k:k + batch_size] for k in range(0,len(train_data),batch_size)]
 
-            # descent part
-            self.weights = [w - lr * wgrad / len(train_data) for w, wgrad in zip(self.weights, wgradcum)]
-            if self.set_biases:
-                self.biases = [b - lr * bgrad / len(train_data) for b, bgrad in zip(self.biases, bgradcum)]
+            for batch in batches:
+                # calculate gradient part
+                wgradcum, bgradcum = self._empty_grad()
+                for x,y in batch:
+                    wgrad, bgrad = self.backprop(x,y)
+                    wgradcum = [old_w + w for old_w, w in zip(wgradcum, wgrad)] # divide by len(data) now? (overflows?)
+                    bgradcum = [old_b + b for old_b, b in zip(bgradcum, bgrad)]
+
+                # descent part
+                self.weights = [w - lr * wgrad / len(batch) for w, wgrad in zip(self.weights, wgradcum)]
+                if self.set_biases:
+                    self.biases = [b - lr * bgrad / len(batch) for b, bgrad in zip(self.biases, bgradcum)]
             
             if log_accuracy:
                 score, results = self.evaluate(train_data)
