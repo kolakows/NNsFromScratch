@@ -33,7 +33,7 @@ def plot_classification_results(net, test_data):
     x_coords = [x[0] for x,y in test_data]
     y_coords = [x[1] for x,y in test_data]
     df = pd.DataFrame({'cls': np.argmax(true_labels, axis = 1), 'x': x_coords, 'y': y_coords})
-    ax = sns.scatterplot(data = df, x = 'x', y = 'y', hue = 'cls', size = 0.01, palette='deep')
+    ax = sns.scatterplot(data = df, x = 'x', y = 'y', hue = 'cls', size = 0.1, palette='deep')
     ax.legend([],[], frameon=False)
 
     plt.show()

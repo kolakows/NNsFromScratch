@@ -91,7 +91,7 @@ report_sweep_configs = [
 
 report_regression_sweep_configs = [
 {
-    'name': 'report regression cube 1000 - loss function and activation comparision',
+    'name': 'report regression cube corrected - loss function and activation comparision',
     'method': 'grid',
     'parameters': {
         'data': {
@@ -102,7 +102,7 @@ report_regression_sweep_configs = [
             'values': ['[1,4,4,1]']
         },            
         'loss_function':{
-            'values': ['MSE', 'cross_entropy']
+            'values': ['MSE', 'MAE']
         },
         'activation_function':{
             'values': ['sigmoid', 'ReLU', 'LeakyReLU']
@@ -114,13 +114,13 @@ report_regression_sweep_configs = [
             'values': [1]
         },
         'epochs':{
-            'values': [50]
+            'values': [100]
         }
     }
 },
 
 {  
-    'name': 'report regression cube 1000 - architecture influence',
+    'name': 'report regression cube corrected - architecture influence',
     'method': 'grid',
     'parameters': {
         'data': {
@@ -132,39 +132,10 @@ report_regression_sweep_configs = [
                                '[1,8,1]','[1,8,8,1]','[1,8,8,8,1]','[1,8,8,8,8,1]']
         },            
         'loss_function':{
-            'values': ['cross_entropy']
-        },
-        'activation_function':{
-            'values': ['sigmoid']
-        },
-        'seed':{
-            'values': [1, 2, 3, 4, 5]
-        },
-        'lr':{
-            'values': [1]
-        },
-        'epochs':{
-            'values': [50]
-        }
-    }
-},
-{  
-    'name': 'report regression cube 1000 - architecture influence - relu',
-    'method': 'grid',
-    'parameters': {
-        'data': {
-            'values': ['regression/data.cube.train.1000.csv']
-        },
-        'layers': {
-            'values': ['[1,1]','[1,2,1]','[1,2,2,1]','[1,2,2,2,1]','[1,2,2,2,2,1]',
-                               '[1,4,1]','[1,4,4,1]','[1,4,4,4,1]','[1,4,4,4,4,1]',
-                               '[1,8,1]','[1,8,8,1]','[1,8,8,8,1]','[1,8,8,8,8,1]']
-        },                        
-        'loss_function':{
             'values': ['MSE']
         },
         'activation_function':{
-            'values': ['ReLU']
+            'values': ['LeakyReLU']
         },
         'seed':{
             'values': [1, 2, 3, 4, 5]
@@ -173,7 +144,7 @@ report_regression_sweep_configs = [
             'values': [1]
         },
         'epochs':{
-            'values': [50]
+            'values': [100]
         }
     }
 }]

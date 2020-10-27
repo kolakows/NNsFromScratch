@@ -79,10 +79,12 @@ class Network():
             self.weights = [w - lr * wgrad / len(train_data) for w, wgrad in zip(self.weights, wgradcum)]
             if self.set_biases:
                 self.biases = [b - lr * bgrad / len(train_data) for b, bgrad in zip(self.biases, bgradcum)]
-
+            
             if log_accuracy:
                 score, results = self.evaluate(train_data)
                 print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {score}")
+            else:
+                print(f'Epoch {i} finished')
             if plot_loss:
                 train_loss.append(self.calculate_loss(train_data))
                 if test_data:
@@ -98,12 +100,12 @@ class Network():
                     if test_data:
                         score, results = self.evaluate(test_data)
                         log_data[f"{'Accuracy' if self.task == 'cls' else 'RMSE'} on test data"] = score
-                wandb.log(log_data)
+                wandb.log(log_data)    
         if plot_loss:
             plot_loss_function(train_loss, 'Train loss')
             if test_data:
                 plot_loss_function(test_loss, 'Test loss')
-
+        
     def backprop(self, x, y):
         '''
         returns (wgrad, bgrad) which are layer by layer gradients of weights and biases wrt. cost function,
