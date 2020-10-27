@@ -25,7 +25,36 @@ report_sweep_configs = [
             'values': [1]
         },
         'epochs':{
-            'values': [50]
+            'values': [500]
+        }
+    }
+},
+
+{
+    'name': 'report regression cube corrected - loss function and activation comparision',
+    'method': 'grid',
+    'parameters': {
+        'data': {
+            'values': ['regression/data.cube.train.1000.csv']
+        },
+
+        'layers': {
+            'values': ['[1,4,4,1]']
+        },            
+        'loss_function':{
+            'values': ['MSE', 'MAE']
+        },
+        'activation_function':{
+            'values': ['sigmoid', 'ReLU', 'LeakyReLU']
+        },
+        'seed':{
+            'values': [1,2,3,4,5]
+        },
+        'lr':{
+            'values': [1]
+        },
+        'epochs':{
+            'values': [500]
         }
     }
 },
@@ -38,9 +67,9 @@ report_sweep_configs = [
             'values': ['classification/data.three_gauss.train.1000.csv']
         },
         'layers': {
-            'values': ['[2,3]','[2,2,3]','[2,2,2,3]','[2,2,2,2,3]','[2,2,2,2,2,3]',
-                               '[2,4,3]','[2,4,4,3]','[2,4,4,4,3]','[2,4,4,4,4,3]',
-                               '[2,8,3]','[2,8,8,3]','[2,8,8,8,3]','[2,8,8,8,8,3]']
+            'values': ['[2,2,3]','[2,2,2,3]','[2,2,2,2,3]','[2,2,2,2,2,3]',
+                       '[2,4,3]','[2,4,4,3]','[2,4,4,4,3]','[2,4,4,4,4,3]',
+                       '[2,8,3]','[2,8,8,3]','[2,8,8,8,3]','[2,8,8,8,8,3]']
         },            
         'loss_function':{
             'values': ['cross_entropy']
@@ -55,21 +84,22 @@ report_sweep_configs = [
             'values': [1]
         },
         'epochs':{
-            'values': [50]
+            'values': [500]
         }
     }
 },
+
 {  
-    'name': 'report classification gauss - architecture influence - relu',
+    'name': 'report regression cube corrected - architecture influence',
     'method': 'grid',
     'parameters': {
         'data': {
-            'values': ['classification/data.three_gauss.train.100.csv']
+            'values': ['regression/data.cube.train.1000.csv']
         },
         'layers': {
-            'values': ['[2,3]','[2,2,3]','[2,2,2,3]','[2,2,2,2,3]','[2,2,2,2,2,3]',
-                               '[2,4,3]','[2,4,4,3]','[2,4,4,4,3]','[2,4,4,4,4,3]',
-                               '[2,8,3]','[2,8,8,3]','[2,8,8,8,3]','[2,8,8,8,8,3]']
+            'values': ['[1,2,1]','[1,2,2,1]','[1,2,2,2,1]','[1,2,2,2,2,1]',
+                       '[1,4,1]','[1,4,4,1]','[1,4,4,4,1]','[1,4,4,4,4,1]',
+                       '[1,8,1]','[1,8,8,1]','[1,8,8,8,1]','[1,8,8,8,8,1]']
         },            
         'loss_function':{
             'values': ['MSE']
@@ -84,10 +114,39 @@ report_sweep_configs = [
             'values': [1]
         },
         'epochs':{
-            'values': [50]
+            'values': [500]
         }
     }
 }]
+# {  
+#     'name': 'report classification gauss - architecture influence - relu',
+#     'method': 'grid',
+#     'parameters': {
+#         'data': {
+#             'values': ['classification/data.three_gauss.train.100.csv']
+#         },
+#         'layers': {
+#             'values': ['[2,3]','[2,2,3]','[2,2,2,3]','[2,2,2,2,3]','[2,2,2,2,2,3]',
+#                                '[2,4,3]','[2,4,4,3]','[2,4,4,4,3]','[2,4,4,4,4,3]',
+#                                '[2,8,3]','[2,8,8,3]','[2,8,8,8,3]','[2,8,8,8,8,3]']
+#         },            
+#         'loss_function':{
+#             'values': ['MSE']
+#         },
+#         'activation_function':{
+#             'values': ['ReLU']
+#         },
+#         'seed':{
+#             'values': [1, 2, 3, 4, 5]
+#         },
+#         'lr':{
+#             'values': [1]
+#         },
+#         'epochs':{
+#             'values': [50]
+#         }
+#     }
+# }]
 
 report_regression_sweep_configs = [
 {
@@ -114,7 +173,7 @@ report_regression_sweep_configs = [
             'values': [1]
         },
         'epochs':{
-            'values': [100]
+            'values': [500]
         }
     }
 },
@@ -127,15 +186,15 @@ report_regression_sweep_configs = [
             'values': ['regression/data.cube.train.1000.csv']
         },
         'layers': {
-            'values': ['[1,1]','[1,2,1]','[1,2,2,1]','[1,2,2,2,1]','[1,2,2,2,2,1]',
-                               '[1,4,1]','[1,4,4,1]','[1,4,4,4,1]','[1,4,4,4,4,1]',
-                               '[1,8,1]','[1,8,8,1]','[1,8,8,8,1]','[1,8,8,8,8,1]']
+            'values': ['[1,2,1]','[1,2,2,1]','[1,2,2,2,1]','[1,2,2,2,2,1]',
+                       '[1,4,1]','[1,4,4,1]','[1,4,4,4,1]','[1,4,4,4,4,1]',
+                       '[1,8,1]','[1,8,8,1]','[1,8,8,8,1]','[1,8,8,8,8,1]']
         },            
         'loss_function':{
             'values': ['MSE']
         },
         'activation_function':{
-            'values': ['LeakyReLU']
+            'values': ['ReLU']
         },
         'seed':{
             'values': [1, 2, 3, 4, 5]
@@ -144,7 +203,7 @@ report_regression_sweep_configs = [
             'values': [1]
         },
         'epochs':{
-            'values': [100]
+            'values': [500]
         }
     }
 }]

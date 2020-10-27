@@ -7,5 +7,6 @@ from sweep_configs import *
 #sweep(preparation_sweep_configs[4])
 #sweep(report_sweep_configs[2])
 
-for sweep_config in report_regression_sweep_configs:
+
+for sweep_config in report_sweep_configs:
     sweep(sweep_config)
