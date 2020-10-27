@@ -13,39 +13,44 @@ import numpy as np
 seed = None
 
 # set 'reg' for regression and 'cls' for classification
-task_type='cls'
-# task_type = 'reg'
+# task_type='cls'
+task_type = 'reg'
 
 # number of perceptrons in each layer
 # classification: input - space dim, output - number of classes
 # regression: input - space dim, output - 1
-net_arch = [2, 7, 7, 3]
-#net_arch = [1, 7, 7, 1]
+#net_arch = [2, 7, 7, 4]
+net_arch = [1, 7, 7, 1]
 
 # path to train data
-train_data_path = '/home/monika/Pulpit/SN/SN_projekt1/classification/data.three_gauss.test.100.csv'
+#train_data_path = '/home/monika/Pulpit/SN/SN_projekt1/classification/data.three_gauss.test.100.csv'
 #train_data_path = '/home/monika/Pulpit/SN/SN_projekt1/regression/data.activation.train.1000.csv'
 #train_data_path = r'C:\MiniProjects\sem2\NeuralNets\classification\data.three_gauss.test.100.csv'
+train_data_path = r'C:\MiniProjects\sem2\NeuralNets\SN_projekt1_test\regression\data.multimodal.train.1000.csv'
+test_data_path = r'C:\MiniProjects\sem2\NeuralNets\SN_projekt1_test\regression\data.multimodal.test.1000.csv'
 
 #path to test data (to be used in the future)
 #currently test data is split
 #test_data_path = ''
 
-activation_fun = sigmoid()
-loss_fun = SE()
+activation_fun = relu()
+loss_fun = MSE()
 
 # do you want to see visualisation of the learning process and results
 visualization = True
 
 net = Network(task_type, net_arch, activation_fun, loss_fun, seed)
-data = pd.read_csv(train_data_path, sep=',', header=0)
+train_data = pd.read_csv(train_data_path, sep=',', header=0)
+test_data = pd.read_csv(test_data_path, sep=',', header=0)
 
 if task_type == 'cls':
-    train, test, label_encoder, feature_scalers = train_test_from_df_categorical(data, 'cls', 0.9, seed)
+    train, test, _, _ = train_test_from_files_categorical(train_data, test_data, 'cls', seed)
+    #train, test, label_encoder, feature_scalers = train_test_from_df_categorical(data, 'cls', 0.9, seed)
 elif task_type == 'reg':
-    train, test, feature_scalers = train_test_from_df_regression(data, 'y', 0.9, seed)
+    train, test, _ = train_test_from_files_regression(train_data, test_data, 'y', seed)
+    #train, test, feature_scalers = train_test_from_df_regression(data, 'y', 0.9, seed)
 
-net.GD(train, lr = 1, epochs = 20)
+net.GD(train, lr = 1, epochs = 100)
 
 test.sort(key = lambda val: val[0][0])
 score, results = net.evaluate(test)
@@ -54,3 +59,5 @@ print(f"{'Accuracy' if task_type == 'cls' else 'RMSE'} score on test data: {scor
 
 if visualization and task_type == 'reg':
     plot_reg_results(test, results)
+if task_type == 'cls':
+    plot_classification_results(net, test)

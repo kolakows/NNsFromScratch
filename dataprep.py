@@ -3,6 +3,15 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
+def train_test_from_files_categorical(train_data, test_data, predict_label, seed, data_scaler = MinMaxScaler):
+    encoder = label_encoder(train_data, predict_label)
+    scalers = scale_columns(train_data, test_data, data_scaler, [predict_label])
+    return df_to_list(train_data, predict_label, encoder), df_to_list(test_data, predict_label, encoder), encoder, scalers
+
+def train_test_from_files_regression(train_data, test_data, predict_label, seed, data_scaler = MinMaxScaler):
+    scalers = scale_columns(train_data, test_data, data_scaler)
+    return df_to_list(train_data, predict_label), df_to_list(test_data, predict_label), scalers
+
 def train_test_from_df_categorical(data, predict_label, train_size,  seed, data_scaler = MinMaxScaler):
     '''
     Splits data into train, test sets in stratified fashion (keeps train/split ratio across classes)
