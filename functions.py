@@ -75,9 +75,9 @@ class SE(loss_function):
 
 class cross_entropy(loss_function):
     def loss(self, output_activation, y):
-        return - (np.multiply(y, np.log(output_activation)) + np.multiply(np.subtract(1,y), np.log(np.subtract(1,output_activation))))
+        return - (np.multiply(y, np.log(output_activation + 1e-10)) + np.multiply(np.subtract(1,y), np.log(np.subtract(1,output_activation) + 1e-10)))
     def deriv(self, output_activation, y):
-        return - np.divide(y, output_activation) + np.divide(np.subtract(1,y), np.subtract(1,output_activation))
+        return - np.divide(y, output_activation + 1e-10) + np.divide(np.subtract(1,y), np.subtract(1,output_activation) + 1e-10)
 
 class MAE(loss_function):
     def loss(self, output_activation, y):
