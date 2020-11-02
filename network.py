@@ -88,6 +88,9 @@ class Network():
             if log_accuracy:
                 score, results = self.evaluate(train_data)
                 print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on train data is: {score}")
+                if test_data:
+                    score, _ = self.evaluate(test_data)
+                    print(f"Epoch {i} finished. Current {'accuracy' if self.task == 'cls' else 'RMSE'} on test data is: {score}")
             else:
                 print(f'Epoch {i} finished')
             if plot_loss:
