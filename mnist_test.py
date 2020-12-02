@@ -25,7 +25,7 @@ train = parse_mnist(img, labels)
 test = parse_mnist(img_test, labels_test)
 
 print('Training started')
-net.GD(train, test_data = test, lr = 0.5, epochs = 5, log_accuracy=True, plot_loss=True)
+net.SGD(train, test_data = test, lr = 0.5, epochs = 5, log_accuracy=True, plot_loss=True)
 
 score, results = net.evaluate(test)
 

@@ -56,7 +56,7 @@ class Network():
                 a = self.afun_output(np.dot(w, a) + b) 
         return a
 
-    def GD(self, train_data, lr, epochs, test_data = None, log = False, log_accuracy = True, plot_loss = False, batch_size = 50):
+    def SGD(self, train_data, lr, epochs, test_data = None, log = False, log_accuracy = True, plot_loss = False, batch_size = 50):
         '''
         Implements full gradient descent over all data, repeats for x epochs
 
