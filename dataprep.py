@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
+import numpy as np
 
 def train_test_from_files_categorical(train_data, test_data, predict_label, seed, data_scaler = MinMaxScaler):
     encoder = label_encoder(train_data, predict_label)
@@ -71,3 +72,12 @@ def df_to_list(df, preditc_label, encoder = None):
         return  [(x,y) for x, y in zip(df.loc[:, df.columns != preditc_label].to_numpy(), encoder.transform(df[preditc_label].values.reshape(-1,1)))]
     else:
         return [(x,[y]) for x, y in zip(df.loc[:, df.columns != preditc_label].to_numpy(), df[preditc_label].to_numpy())]
+
+def parse_mnist(data, labels):
+    data = np.array(data)
+    labels = np.array(labels)
+    encoder = OneHotEncoder(sparse = False)
+    encoder.fit_transform(labels.reshape(-1, 1))
+    data = data/256
+    data_list = [(x,y) for x, y in zip(data, encoder.transform(labels.reshape(-1,1)))]
+    return data_list
