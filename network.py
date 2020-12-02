@@ -23,7 +23,7 @@ class Network():
         self.afun = activation_function
         self.afun_output = softmax() if task_type == 'cls' else linear()
         self.layer_count = len(network_size)
-        self.weights = [rng.standard_normal((x,y))/np.sqrt(y) for x,y in zip(network_size[1:],network_size[:-1])]
+        self.weights = [rng.standard_normal((x,y))/np.sqrt(y/2) for x,y in zip(network_size[1:],network_size[:-1])]
         self.set_biases = set_biases
         if set_biases:
             self.biases = [rng.standard_normal(x) for x in network_size[1:]]
@@ -56,7 +56,6 @@ class Network():
                 a = self.afun_output(np.dot(w, a) + b) 
         return a
 
-    # GD will take long time to compute for large datasets, compared to SGD
     def GD(self, train_data, lr, epochs, test_data = None, log = False, log_accuracy = True, plot_loss = False, batch_size = 50):
         '''
         Implements full gradient descent over all data, repeats for x epochs
